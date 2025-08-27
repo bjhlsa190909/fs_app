@@ -319,8 +319,19 @@ if __name__ == '__main__':
         os.makedirs('static/js')
     
     print("🚀 재무제표 시각화 웹 애플리케이션 시작")
-    print("   URL: http://localhost:5000")
-    print("   데이터베이스: companies.db")
-    print("   회사 수:", db.get_stats()['total_companies'])
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # 환경에 따른 설정
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('FLASK_ENV') != 'production'
+    
+    if not debug:
+        print(f"   프로덕션 모드로 실행 중 (포트: {port})")
+    else:
+        print("   URL: http://localhost:5000")
+        print("   데이터베이스: companies.db")
+        try:
+            print("   회사 수:", db.get_stats()['total_companies'])
+        except Exception as e:
+            print(f"   데이터베이스 연결 오류: {e}")
+    
+    app.run(debug=debug, host='0.0.0.0', port=port)
